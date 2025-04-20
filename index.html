@@ -1,0 +1,3753 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система МСЭ</title>
+    <style>
+        /* Общие стили */
+        :root {
+            --primary-color: #3498db;
+            --primary-hover: #2980b9;
+            --secondary-color: #9b59b6;
+            --secondary-hover: #8e44ad;
+            --success-color: #2ecc71;
+            --success-hover: #27ae60;
+            --danger-color: #e74c3c;
+            --danger-hover: #c0392b;
+            --warning-color: #f39c12;
+            --warning-hover: #e67e22;
+            --info-color: #3498db;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --gray-color: #95a5a6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --border-radius: 10px;
+            --card-padding: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPgogIDxkZWZzPgogICAgPHBhdHRlcm4gaWQ9InBhdHRlcm4iIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj4KICAgICAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmNWY1ZjUiLz4KICAgICAgPHBhdGggZD0iTTAgMCBMIDEwMCAxMDAgTSAxMDAgMCBMIDAgMTAwIiBzdHJva2U9InJnYmEoMCwwLDAsMC4xKSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgICA8L3BhdHRlcm4+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcGF0dGVybikiLz4KPC9zdmc+');
+            background-attachment: fixed;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 1;
+            transition: var(--transition);
+        }
+
+        .container:hover {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark-color);
+            margin-top: 0;
+            font-weight: 600;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h1:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+        
+        /* Стили главной страницы */
+        .bureaus-grid, .experts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            font-size: 18px;
+            background-color: rgba(245, 245, 245, 0.7);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            position: relative;
+            z-index: 2;
+        }
+
+        .bureau-card, .expert-card, .omo-card {
+            color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            border: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 16px;
+            transform: translateY(0);
+            perspective: 1000px;
+        }
+        
+        .bureau-card {
+            background: linear-gradient(135deg, var(--primary-color), #3a7bd5);
+        }
+        
+        .expert-card {
+            background: linear-gradient(135deg, var(--secondary-color), #8e2de2);
+        }
+        
+        .omo-card {
+            background: linear-gradient(135deg, var(--success-color), #00b09b);
+            grid-column: 1 / -1;
+            font-size: 32px;
+            padding: 25px;
+            min-height: 100px;
+        }
+
+        .bureau-card:hover, .expert-card:hover, .omo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .bureau-card:active, .expert-card:active, .omo-card:active {
+            transform: translateY(-2px);
+        }
+
+        .bureau-card::before, .expert-card::before, .omo-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(255,255,255,0.2), rgba(255,255,255,0));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .bureau-card:hover::before, .expert-card:hover::before, .omo-card:hover::before {
+            opacity: 1;
+        }
+
+        .bureau-card::after, .expert-card::after, .omo-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+            transform: translateY(100%);
+            transition: var(--transition);
+        }
+
+        .bureau-card:hover::after, .expert-card:hover::after, .omo-card:hover::after {
+            transform: translateY(0);
+        }
+        
+        /* Модальное окно пароля */
+        .password-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .password-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: translateY(-20px);
+            opacity: 0;
+            animation: slideUp 0.3s ease forwards;
+        }
+
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .password-container h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .password-container input {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 20px 0;
+            box-sizing: border-box;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+            background-color: #f9f9f9;
+        }
+
+        .password-container input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            background-color: white;
+        }
+
+        .password-container button {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .password-container button:hover {
+            background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .password-container button:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            margin-top: 10px;
+            display: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Стили для кнопки закрытия модального окна */
+        .close-modal {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 50px;
+            cursor: pointer;
+            color: var(--gray-color);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+            padding: 0;
+            margin: 0;
+        }
+
+        .close-modal:hover {
+            color: var(--dark-color);
+            background-color: rgba(0, 0, 0, 0.05);
+            transform: scale(1.1);
+        }
+        
+        /* Кнопки */
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary-color), var(--secondary-hover));
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), var(--success-hover));
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), var(--danger-hover));
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color), var(--warning-hover));
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, var(--info-color), #3a7bd5);
+            color: white;
+        }
+
+        .btn-light {
+            background: linear-gradient(135deg, var(--light-color), #dfe6e9);
+            color: var(--dark-color);
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255,255,255,0.2), rgba(255,255,255,0));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .btn:hover::after {
+            opacity: 1;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, var(--gray-color), #7f8c8d);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #6c7a7d, var(--gray-color));
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .back-btn:active {
+            transform: translateY(0);
+        }
+
+        .back-to-omo-btn {
+            background: linear-gradient(135deg, var(--warning-color), var(--warning-hover));
+        }
+        
+        /* Стили формы */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 12px 15px;
+            text-align: left;
+            transition: var(--transition);
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #e9f7fe;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            width: calc(50% - 15px);
+            float: left;
+            margin-right: 15px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .form-group.full-width {
+            width: 100%;
+            margin-right: 0;
+            clear: both;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: var(--dark-color);
+            font-size: 16px;
+        }
+
+        .required label:after {
+            content: " *";
+            color: var(--danger-color);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            box-sizing: border-box;
+            transition: var(--transition);
+            font-size: 16px;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        input:hover, select:hover, textarea:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            background-color: white;
+        }
+
+        /* Стили для заполненных/пустых полей */
+        .filled {
+            border-color: var(--success-color) !important;
+            background-color: rgba(46, 204, 113, 0.05) !important;
+        }
+
+        .empty {
+            border-color: var(--danger-color) !important;
+            background-color: rgba(231, 76, 60, 0.05) !important;
+        }
+
+        .date-error {
+            color: var(--danger-color);
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            clear: both;
+            padding-top: 30px;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--gray-color);
+            font-size: 14px;
+            clear: both;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            clear: both;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .form-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            clear: both;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .form-section h2:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 5px;
+            bottom: 5px;
+            width: 5px;
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+            border-radius: 5px;
+        }
+
+        .records-list {
+            margin-top: 40px;
+            clear: both;
+            background-color: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .records-list:hover {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .records-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .records-count {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        .no-records {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-style: italic;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 250px;
+            margin: 0;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        .edit-btn {
+            background: linear-gradient(135deg, var(--success-color), var(--success-hover));
+            color: white;
+            margin-right: 8px;
+        }
+
+        .edit-btn:hover {
+            background: linear-gradient(135deg, var(--success-hover), var(--success-color));
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, var(--danger-color), var(--danger-hover));
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(135deg, var(--danger-hover), var(--danger-color));
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .view-all-btn {
+            background: linear-gradient(135deg, var(--secondary-color), var(--secondary-hover));
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .pagination button {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            background-color: white;
+            color: var(--dark-color);
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            min-width: 40px;
+            text-align: center;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background-color: #f1f1f1;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .pagination button.active-page {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination span {
+            padding: 8px 15px;
+            color: var(--gray-color);
+        }
+
+        /* Стили для чекбоксов особых отметок */
+        .special-marks-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .special-mark-checkbox {
+            display: none;
+        }
+        
+        .special-mark-label {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #f0f0f0;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid #ddd;
+            font-size: 16px;
+            font-weight: 500;
+            box-shadow: var(--shadow);
+        }
+        
+        .special-mark-checkbox:checked + .special-mark-label {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .special-mark-label:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+            transform: translateY(-2px);
+        }
+    
+        .special-mark-checkbox:focus + .special-mark-label {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+
+        .select-counter {
+            font-size: 13px;
+            color: var(--gray-color);
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        /* Стили для логотипа */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .logo {
+            max-width: 250px;
+            height: auto;
+            display: inline-block;
+            vertical-align: middle;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* Стили для блоков на главной странице */
+        .section-block {
+            border: 2px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 30px;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-block:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        .section-title {
+            color: var(--dark-color);
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+            font-size: 1.5em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .section-title::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--primary-color), transparent);
+        }
+
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 10px;
+            background-color: var(--primary-color);
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+        }
+
+        /* Анимации */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(52, 152, 219, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Индикатор загрузки */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+        
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite, pulse 1.5s ease infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: white;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 500;
+            animation: pulse 1.5s ease infinite;
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 25px 30px 30px 20px; /* Увеличил padding (особенно снизу) */
+            border-radius: var(--border-radius);
+            color: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            z-index: 1100;
+            display: flex;
+            flex-direction: column;
+            max-width: 450px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            backdrop-filter: blur(5px);
+            background-color: rgba(0,0,0,0.7);
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.9), rgba(39, 174, 96, 0.9));
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.9), rgba(192, 57, 43, 0.9));
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, rgba(243, 156, 18, 0.9), rgba(230, 126, 34, 0.9));
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.9), rgba(41, 128, 185, 0.9));
+        }
+
+        .notification-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .notification-close:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+
+        .notification-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .notification-actions button {
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .notification-actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .confirm-btn {
+            background: linear-gradient(135deg, var(--danger-color), var(--danger-hover));
+            color: white;
+        }
+
+        .cancel-btn {
+            background: linear-gradient(135deg, var(--gray-color), #7f8c8d);
+            color: white;
+        }
+
+        /* Кнопка "Наверх" */
+        #scrollToTopBtn {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 99;
+            border: none;
+            outline: none;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 20px;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #scrollToTopBtn:hover {
+            background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.6);
+        }
+
+        #scrollToTopBtn:active {
+            transform: translateY(-2px) scale(1);
+        }
+
+        /* Адаптивные стили */
+        @media (max-width: 992px) {
+            .form-group {
+                width: 100%;
+                margin-right: 0;
+            }
+            
+            .bureaus-grid, .experts-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .omo-card {
+                font-size: 26px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .button-group button {
+                width: 100%;
+            }
+            
+            .records-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-container {
+                width: 100%;
+            }
+            
+            .search-input {
+                width: calc(100% - 80px);
+            }
+            
+            .section-block {
+                padding: 20px;
+            }
+            
+            .bureaus-grid, .experts-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                padding: 15px;
+            }
+            
+            .omo-card {
+                font-size: 22px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-group {
+                margin-bottom: 15px;
+            }
+            
+            .form-section {
+                padding-bottom: 15px;
+                margin-bottom: 25px;
+            }
+            
+            .special-marks-container {
+                flex-direction: column;
+            }
+            
+            .special-mark-label {
+                width: 100%;
+            }
+            
+            .pagination button {
+                padding: 6px 10px;
+                min-width: 35px;
+            }
+            
+            .edit-btn, .delete-btn {
+                padding: 6px 10px;
+                font-size: 13px;
+                margin-bottom: 5px;
+            }
+            
+            .bureau-card, .expert-card {
+                padding: 15px;
+                font-size: 14px;
+                min-height: 70px;
+            }
+            
+            .omo-card {
+                font-size: 18px;
+                padding: 15px;
+                min-height: 80px;
+            }
+        }
+        /* Специальные стили для выравнивания карточек */
+        .bureau-card-40, .bureau-card-42, .expert-card-9 {
+            grid-column: span 2;
+            margin: 0 auto;
+            width: 190px;
+        }
+        
+        /* Новый стиль для смещения бюро 40 */
+        .bureau-card-40 {
+            grid-row: 8; /* Помещаем на третью строку */
+            grid-column: 2 / span 2; /* Растягиваем на 2 колонки, начиная со второй */
+        }
+        .bureau-card-42 {
+            grid-row: 8; /* Помещаем на третью строку */
+            grid-column: 2 / span 4; /* Растягиваем на 2 колонки, начиная со второй */
+        }
+        
+        /* Стиль для экспертного состава 9 */
+        .expert-card-9 {
+            grid-row: 2; /* Помещаем на вторую строку */
+            grid-column: 2 / span 3; /* Растягиваем на 2 колонки, начиная со второй */
+        }
+        .export-btn-group {
+            display: flex;
+            justify-content: center; /* Выравнивание по правому краю */
+            margin-top: 20px; /* Отступ сверху */
+        }
+        .omo-selector {
+            background-color: white !important;
+            border: 2px solid #e0e0e0 !important;
+        }
+
+        .omo-selector:hover, .omo-selector:focus {
+            border-color: var(--primary-color) !important;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2) !important;
+            background-color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Контейнер для уведомлений -->
+    <div id="notificationContainer"></div>
+    
+    <!-- Индикатор загрузки -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div style="text-align: center;">
+            <div class="loading-spinner"></div>
+            <div class="loading-text" id="loadingText">Загрузка...</div>
+        </div>
+    </div>
+    
+    <!-- Кнопка "Наверх" -->
+    <button id="scrollToTopBtn" title="Наверх">↑</button>
+
+    <!-- Главная страница -->
+    <div id="mainPage" class="container">
+        <div class="logo-container">
+            <img src="/static/images/logo.png" alt="Логотип МСЭ" class="logo">
+        </div>
+        <h1>Выберите бюро или экспертный состав</h1>
+        
+        <!-- Блок бюро -->
+        <div class="section-block">
+            <h2 class="section-title">Бюро МСЭ</h2>
+            <div class="bureaus-grid" id="bureausGrid">
+                <!-- Бюро будут добавлены через JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Блок экспертных составов -->
+        <div class="section-block">
+            <h2 class="section-title">Экспертные составы</h2>
+            <div class="experts-grid" id="expertsGrid">
+                <!-- Экспертные составы будут добавлены через JavaScript -->
+            </div>
+        </div>
+        
+        <div class="section-block">
+            <h2 class="section-title">Профиль ОМО</h2>
+            <div class="experts-grid">
+                <div class="omo-card" onclick="openPasswordModal('omo')" style="display: block;">Организационно-методический отдел</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для пароля -->
+    <div id="passwordModal" class="password-modal">
+        <div class="password-container">
+            <button class="close-modal" id="closeModalBtn">&times;</button>
+            <h2 id="modalBureauTitle">Бюро №1</h2>
+            <p>Введите пароль для доступа:</p>
+            <input type="password" id="passwordInput" placeholder="Пароль">
+            <div id="passwordError" class="error-message">Неверный пароль!</div>
+            <button id="submitPassword" class="btn btn-primary">Войти</button>
+        </div>
+    </div>
+
+    <!-- Страница формы (изначально скрыта) -->
+    <div id="formPage" class="container" style="display:none;">
+        <button id="backBtn" class="back-btn">← Назад к списку</button>
+        <button id="backToOmoBtn" class="back-btn back-to-omo-btn" style="display:none;">← Назад к записям ОМО</button>
+        <h1 id="formBureauTitle">Бюро №1 - Медико-социальная экспертиза</h1>
+        
+        <form id="mseForm">
+            <input type="hidden" id="recordId" name="recordId" value="">
+            <input type="hidden" id="bureauNumber" name="bureauNumber" value="">
+            
+            <div class="form-section">
+                <h2>Основные данные</h2>
+                
+                <div class="form-group">
+                    <label for="fullName">ФИО:</label>
+                    <input type="text" id="fullName" name="fullName" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="birthDate">Дата рождения:</label>
+                    <input type="date" id="birthDate" name="birthDate" min="1900-01-01" max="2030-12-31" class="form-control">
+                    <div class="date-error" id="birthDateError">Некорректная дата</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="snils">СНИЛС гражданина:</label>
+                    <input type="text" id="snils" name="snils" pattern="\d{3}-\d{3}-\d{3} \d{2}" 
+                           placeholder="XXX-XXX-XXX XX" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="ageCategory">Возрастная категория:</label>
+                    <select id="ageCategory" name="ageCategory" class="form-control">
+                        <option value="">Выберите категорию</option>
+                        <option value="adult">Взрослые</option>
+                        <option value="child">Дети</option>
+                    </select>
+                </div>
+                
+                <div class="form-group required">
+                    <label for="mseDate">Дата проведения МСЭ:</label>
+                    <input type="date" id="mseDate" name="mseDate" required min="1900-01-01" max="2030-12-31" class="form-control">
+                    <div class="date-error" id="mseDateError">Некорректная дата</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="decisionDate">Дата вынесения решения:</label>
+                    <input type="date" id="decisionDate" name="decisionDate" min="1900-01-01" max="2030-12-31" class="form-control">
+                    <div class="date-error" id="decisionDateError">Некорректная дата</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regDate">Дата регистрации направления (заявления):</label>
+                    <input type="date" id="regDate" name="regDate" min="1900-01-01" max="2030-12-31" class="form-control">
+                    <div class="date-error" id="regDateError">Некорректная дата</div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label>Особые отметки (максимум 3):</label>
+                    <div class="special-marks-container">
+                        <input type="checkbox" id="amputee" name="specialMarks" value="amputee" class="special-mark-checkbox">
+                        <label for="amputee" class="special-mark-label">Ампутант</label>
+                        
+                        <input type="checkbox" id="prisoner" name="specialMarks" value="prisoner" class="special-mark-checkbox">
+                        <label for="prisoner" class="special-mark-label">Лицо, находящееся в местах лишения свободы</label>
+                        
+                        <input type="checkbox" id="pni" name="specialMarks" value="pni" class="special-mark-checkbox">
+                        <label for="pni" class="special-mark-label">Лицо, находящееся в ПНИ (ДДИ)</label>
+                        
+                        <input type="checkbox" id="new_region" name="specialMarks" value="new_region" class="special-mark-checkbox">
+                        <label for="new_region" class="special-mark-label">Житель новых регионов</label>
+                        
+                        <input type="checkbox" id="other_institution" name="specialMarks" value="other_institution" class="special-mark-checkbox">
+                        <label for="other_institution" class="special-mark-label">Лицо, находящееся в других стационарных учреждениях соцзащиты</label>
+                        
+                        <input type="checkbox" id="palliative" name="specialMarks" value="palliative" class="special-mark-checkbox">
+                        <label for="palliative" class="special-mark-label">Нуждающийся в паллиативной помощи</label>
+                        
+                        <input type="checkbox" id="svo" name="specialMarks" value="svo" class="special-mark-checkbox">
+                        <label for="svo" class="special-mark-label">Участник СВО</label>
+                    </div>
+                    <div class="select-counter" id="specialMarksCounter">Выбрано: 0/3</div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>Воинский учет и документы</h2>
+                
+                <div class="form-group">
+                    <label for="militaryRegistration">Воинский учет:</label>
+                    <select id="militaryRegistration" name="militaryRegistration" class="form-control">
+                        <option value="">Выберите статус</option>
+                        <option value="registered">Состоящий на воинском учете</option>
+                        <option value="obliged">Не состоящий на воинском учете, но обязанный состоять</option>
+                        <option value="applying">Поступающий на воинский учет</option>
+                        <option value="not_registered">Не состоящий на воинском учете</option>
+                    </select>
+                </div>
+                
+                <!-- Поле для бюро -->
+                <div class="form-group" id="bureauDocumentFormatGroup">
+                    <label for="documentFormat">Формат документа:</label>
+                    <select id="documentFormat" name="documentFormat" class="form-control">
+                        <option value="">Выберите формат</option>
+                        <option value="paper_direction">Направление бумажное</option>
+                        <option value="electronic_direction">Направление в электронном виде</option>
+                        <option value="paper_application">Заявление бумажное</option>
+                        <option value="epgu">Заявление ЕПГУ</option>
+                    </select>
+                </div>
+                
+                <!-- Поле для экспертных составов -->
+                <div class="form-group" id="expertDocumentFormatGroup" style="display: none;">
+                    <label for="expertDocumentFormat">Формат документа:</label>
+                    <select id="expertDocumentFormat" name="expertDocumentFormat" class="form-control">
+                        <option value="">Выберите формат</option>
+                        <option value="paper_application">Заявление бумажное</option>
+                        <option value="epgu">Заявление ЕПГУ</option>
+                    </select>
+                </div>
+                
+                <!-- Поле для экспертных составов - Порядок проведения МСЭ -->
+                <div class="form-group" id="procedureTypeGroup" style="display: none;">
+                    <label for="procedureType">Порядок проведения МСЭ:</label>
+                    <select id="procedureType" name="procedureType" class="form-control">
+                        <option value="">Выберите порядок</option>
+                        <option value="appeal">Обжалование</option>
+                        <option value="control">Контроль</option>
+                        <option value="pdo">ПДО</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>Цель и форма проведения МСЭ</h2>
+                
+                <!-- Поле для бюро -->
+                <div class="form-group" id="bureauPurposeGroup">
+                    <label for="purpose">Цель освидетельствования:</label>
+                    <select id="purpose" name="purpose" class="form-control">
+                        <option value="">Выберите цель</option>
+                        <option value="disability_group">Группа инвалидности</option>
+                        <option value="disabled_child">Категория "ребенок-инвалид"</option>
+                        <option value="disability_reason">Причина инвалидности</option>
+                        <option value="disability_term">Срок инвалидности</option>
+                        <option value="supt">Определение СУПТ</option>
+                        <option value="ipra_development">Разработка ИПРА</option>
+                        <option value="prp_development">Разработка ПРП</option>
+                        <option value="death_reason">Определение причины смерти</option>
+                        <option value="care_need">Определение нуждаемости в постоянном постороннем уходе</option>
+                        <option value="new_certificate">Выдача новой справки об инвалидности</option>
+                        <option value="duplicate_certificate">Выдача дубликата справки об инвалидности</option>
+                        <option value="new_supt_certificate">Выдача новой справки о СУПТ</option>
+                        <option value="duplicate_supt_certificate">Выдача дубликата справки о СУПТ</option>
+                        <option value="ipra_changes">Внесение изменений в ИПРА</option>
+                        <option value="prp_changes">Внесение изменений в ПРП</option>
+                    </select>
+                </div>
+                
+                <!-- Поле для экспертных составов -->
+                <div class="form-group" id="expertPurposeGroup" style="display: none;">
+                    <label for="expertPurpose">Цель освидетельствования:</label>
+                    <select id="expertPurpose" name="expertPurpose" class="form-control">
+                        <option value="">Выберите цель</option>
+                        <option value="disability_group">Группа инвалидности</option>
+                        <option value="disabled_child">Категория ребенок-инвалид</option>
+                        <option value="disability_reason">Причина инвалидности</option>
+                        <option value="disability_term">Срок инвалидности</option>
+                        <option value="supt">Определение СУПТ</option>
+                        <option value="care_need">Определение нуждаемости в постороннем уходе</option>
+                        <option value="death_reason">Определение причины смерти</option>
+                        <option value="ipra_development">Разработка ИПРА</option>
+                        <option value="prp_development">Разработка ПРП</option>
+                        <option value="other">Иное</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mseType">МСЭ проводится:</label>
+                    <select id="mseType" name="mseType" class="form-control">
+                        <option value="">Выберите тип</option>
+                        <option value="primary">Первично</option>
+                        <option value="repeat">Повторно</option>
+                        <option value="early_repeat">Повторно (досрочно)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mseForm">Форма проведения МСЭ:</label>
+                    <select id="mseFormSelect" name="mseForm" class="form-control">
+                        <option value="">Выберите форму</option>
+                        <option value="in_person">Очно</option>
+                        <option value="in_absentia">Заочно</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mseFormChange">Изменение формы проведения МСЭ:</label>
+                    <select id="mseFormChange" name="mseFormChange" class="form-control">
+                        <option value="">Выберите вариант</option>
+                        <option value="v">В</option>
+                        <option value="g">Г</option>
+                        <option value="d">Д</option>
+                        <option value="e">Е</option>
+                        <option value="zh">Ж</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>Результаты предыдущей МСЭ</h2>
+                
+                <div class="form-group">
+                    <label for="prevDisability">Инвалидность (предыдущая МСЭ):</label>
+                    <select id="prevDisability" name="prevDisability" class="form-control">
+                        <option value="">Выберите вариант</option>
+                        <option value="first">Первая</option>
+                        <option value="second">Вторая</option>
+                        <option value="third">Третья</option>
+                        <option value="kri">КРИ</option>
+                        <option value="not_set">Инвалидность не установлена</option>
+                        <option value="supt_set">Установление СУПТ</option>
+                        <option value="supt_not_set">СУПТ не установлена</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="prevDisabilityReason">Причина инвалидности (предыдущая МСЭ):</label>
+                    <select id="prevDisabilityReason" name="prevDisabilityReason" class="form-control">
+                        <option value="">Выберите причину</option>
+                        <option value="general_disease">Общее заболевание</option>
+                        <option value="childhood">Инвалидность с детства</option>
+                        <option value="professional_disease">Профессиональное заболевание</option>
+                        <option value="work_injury">Трудовое увечье</option>
+                        <option value="military_injury">Военная травма</option>
+                        <option value="military_service">Заболевание получено в период военной службы</option>
+                        <option value="other">Другое</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="prevDisabilityTerm">Срок инвалидности (предыдущая МСЭ):</label>
+                    <select id="prevDisabilityTerm" name="prevDisabilityTerm" class="form-control">
+                        <option value="">Выберите срок</option>
+                        <option value="1_year">1 год</option>
+                        <option value="2_years">2 года</option>
+                        <option value="5_years">5 лет</option>
+                        <option value="until_14">До 14 лет</option>
+                        <option value="until_18">До 18 лет</option>
+                        <option value="indefinitely">Бессрочно</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>Результаты текущей МСЭ</h2>
+                
+                <div class="form-group">
+                    <label for="currentDisability">Инвалидность (текущая МСЭ):</label>
+                    <select id="currentDisability" name="currentDisability" class="form-control">
+                        <option value="">Выберите вариант</option>
+                        <option value="first">Первая</option>
+                        <option value="second">Вторая</option>
+                        <option value="third">Третья</option>
+                        <option value="kri">КРИ</option>
+                        <option value="not_set">Инвалидность не установлена</option>
+                        <option value="supt_set">Установление СУПТ</option>
+                        <option value="supt_not_set">СУПТ не установлена</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="currentDisabilityReason">Причина инвалидности (текущая МСЭ):</label>
+                    <select id="currentDisabilityReason" name="currentDisabilityReason" class="form-control">
+                        <option value="">Выберите причину</option>
+                        <option value="general_disease">Общее заболевание</option>
+                        <option value="childhood">Инвалидность с детства</option>
+                        <option value="professional_disease">Профессиональное заболевание</option>
+                        <option value="work_injury">Трудовое увечье</option>
+                        <option value="military_injury">Военная травма</option>
+                        <option value="military_service">Заболевание получено в период военной службы</option>
+                        <option value="other">Другое</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="currentDisabilityTerm">Срок инвалидности (текущая МСЭ):</label>
+                    <select id="currentDisabilityTerm" name="currentDisabilityTerm" class="form-control">
+                        <option value="">Выберите срок</option>
+                        <option value="1_year">1 год</option>
+                        <option value="2_years">2 года</option>
+                        <option value="5_years">5 лет</option>
+                        <option value="until_14">До 14 лет</option>
+                        <option value="until_18">До 18 лет</option>
+                        <option value="indefinitely">Бессрочно</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mainDiagnosis">Диагноз основной (с шифром МКБ):</label>
+                    <input type="text" id="mainDiagnosis" name="mainDiagnosis" placeholder="Диагноз (код по МКБ-10)" class="form-control">
+                </div>
+            </div>
+            
+            <!-- Секция для бюро -->
+            <div class="form-section" id="bureauIpraSection">
+                <h2>ИПРА и дополнительные данные</h2>
+                
+                <div class="form-group">
+                    <label for="pdoDeveloped">ПДО разработана:</label>
+                    <select id="pdoDeveloped" name="pdoDeveloped" class="form-control">
+                        <option value="">Выберите вариант</option>
+                        <option value="consent">Получено согласие</option>
+                        <option value="refusal">Отказ</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ipraDirection">Разработана ИПРА по направлению:</label>
+                    <select id="ipraDirection" name="ipraDirection" class="form-control">
+                        <option value="">Выберите вариант</option>
+                        <option value="regular">В очередной срок</option>
+                        <option value="exclusively">Исключительно для разработки ИПРА</option>
+                        <option value="health_change">Изменение состояния здоровья (повторно досрочно)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ipraContainsTsr">ИПРА содержит ТСР:</label>
+                    <select id="ipraContainsTsr" name="ipraContainsTsr" class="form-control">
+                        <option value="">Выберите вариант</option>
+                        <option value="yes">Да</option>
+                        <option value="no">Нет</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ipraChanges">Внесение изменений в ИПРА:</label>
+                    <select id="ipraChanges" name="ipraChanges" class="form-control">
+                        <option value="">Выберите вариант</option>
+                        <option value="anthropometric">Антропометрические данные</option>
+                        <option value="personal">Персональные данные</option>
+                        <option value="tsr_specs">Уточнение технических характеристик ТСР</option>
+                        <option value="errors">Исправление технических ошибок</option>
+                        <option value="maternal_capital">Материнский капитал</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Секция для экспертных составов -->
+            <div class="form-section" id="expertAdditionalSection" style="display: none;">
+                <h2>Дополнительные данные</h2>
+                
+                <div class="form-group">
+                    <label for="pdoDevelopedExpert">ПДО разработана:</label>
+                    <select id="pdoDevelopedExpert" name="pdoDevelopedExpert" class="form-control">
+                        <option value="">Выберите вариант</option>
+                        <option value="consent">Получено согласие</option>
+                        <option value="refusal">Отказ</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="decisionChangedPart">Решение изменено в части:</label>
+                    <select id="decisionChangedPart" name="decisionChangedPart" class="form-control">
+                        <option value="">Выберите вариант</option>
+                        <option value="disability_group">Группы инвалидности</option>
+                        <option value="disabled_child">Категории ребенок-инвалид</option>
+                        <option value="disability_term">Срока инвалидности</option>
+                        <option value="disability_reason">Причины инвалидности</option>
+                        <option value="ipra_development">Разработки ИПРА</option>
+                        <option value="supt">Степени УПТ</option>
+                        <option value="prp_development">ПРП</option>
+                        <option value="other">Другие</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tsrChanged">Из них изменено в части ТСР:</label>
+                    <select id="tsrChanged" name="tsrChanged" class="form-control">
+                        <option value="">Выберите вариант</option>
+                        <option value="yes">Да</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sfrAppeal">МСЭ по обращению ОСФР:</label>
+                    <select id="sfrAppeal" name="sfrAppeal" class="form-control">
+                        <option value="">Выберите вариант</option>
+                        <option value="yes">Да</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="changed">Из них изменено:</label>
+                    <select id="changed" name="changed" class="form-control">
+                        <option value="">Выберите вариант</option>
+                        <option value="yes">Да</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" id="saveBtn" class="btn btn-primary">Сохранить</button>
+                <button type="button" id="clearFormBtn" class="btn btn-danger">Очистить форму</button>
+                <button type="button" id="cancelEditBtn" class="btn btn-warning" style="display:none;">Отменить редактирование</button>
+            </div>
+        </form>
+
+        
+        <div class="records-list">
+            <div class="records-info">
+                <div class="records-count">Сохраненные записи: <span id="recordsCount">0</span></div>
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Поиск по СНИЛС">
+                    <button id="searchBtn" class="btn btn-info">Найти</button>
+                </div>
+            </div>
+            <table id="recordsTable">
+                <thead>
+                    <tr>
+                        <th>Дата МСЭ</th>
+                        <th>ФИО</th>
+                        <th>Дата рождения</th>
+                        <th>СНИЛС</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Записи будут добавляться здесь -->
+                </tbody>
+            </table>
+            <button id="viewAllBtn" class="view-all-btn btn">Просмотреть все записи</button>
+        </div>
+        
+        <div class="footer">
+            <p>Система учета медико-социальной экспертизы © 2025</p>
+        </div>
+    </div>
+
+    <!-- Страница всех записей (изначально скрыта) -->
+    <div id="allRecordsPage" class="container" style="display:none;">
+        <button id="backToFormBtn" class="back-btn">← Назад к форме</button>
+        <h1 id="allRecordsTitle">Все записи Бюро №1</h1>
+        
+        <div class="records-list">
+            <div class="records-info">
+                <div class="records-count">Всего записей: <span id="allRecordsCount">0</span></div>
+                <div class="search-container">
+                    <input type="text" id="allRecordsSearchInput" class="search-input" placeholder="Поиск по СНИЛС">
+                    <button id="allRecordsSearchBtn" class="btn btn-info">Найти</button>
+                </div>
+            </div>
+            <table id="allRecordsTable">
+                <thead>
+                    <tr>
+                        <th>Дата МСЭ</th>
+                        <th>ФИО</th>
+                        <th>Дата рождения</th>
+                        <th>СНИЛС</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Все записи будут добавляться здесь -->
+                </tbody>
+            </table>
+            <div class="pagination" id="pagination">
+                <!-- Пагинация будет добавляться здесь -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Страница ОМО (изначально скрыта) -->
+    <div id="omoPage" class="container" style="display:none;">
+        <button id="backFromOmoBtn" class="back-btn">← Назад к списку</button>
+        <h1>Профиль ОМО - Просмотр всех записей</h1>
+        
+        <div class="form-group">
+            <label for="omoSelector">Выберите бюро/экспертный состав:</label>
+            <select id="omoSelector" class="omo-selector form-control">
+                <option value="">Все записи</option>
+                <!-- Опции будут добавлены через JavaScript -->
+            </select>
+        </div>
+        
+        <div class="records-list">
+            <div class="records-info">
+                <div class="records-count">Всего записей: <span id="omoRecordsCount">0</span></div>
+                <div class="search-container">
+                    <input type="text" id="omoSearchInput" class="search-input" placeholder="Поиск по СНИЛС">
+                    <button id="omoSearchBtn" class="btn btn-info">Найти</button>
+                </div>
+            </div>
+            <table id="omoRecordsTable">
+                <thead>
+                    <tr>
+                        <th>Источник</th>
+                        <th>Дата МСЭ</th>
+                        <th>ФИО</th>
+                        <th>Дата рождения</th>
+                        <th>СНИЛС</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Записи ОМО будут добавляться здесь -->
+                </tbody>
+            </table>
+            <div class="pagination" id="omoPagination">
+                <!-- Пагинация будет добавляться здесь -->
+            </div>
+        </div>
+        
+        <div class="export-btn-group button-group">
+            <button onclick="exportData('xlsx')" class="btn btn-success">Экспорт в EXCEL</button>
+        </div>
+    </div>
+
+<script>
+    // Константы
+    const BUREAU_COUNT = 42;
+    const EXCLUDED_BUREAUS = [25, 26, 27, 31, 41];
+    const EXPERTS = [1, 2, 3, 5, 8, 9];
+    const API_BASE_URL = window.location.origin + "/api";
+    const BUREAU_INITIAL_RECORDS = 10;
+    const RECORDS_PER_PAGE = 30;
+    const OMO_RECORDS_PER_PAGE = 30;
+    const CACHE_TTL = 60 * 1000;
+    const LOADING_DELAY = 300;
+
+    // Элементы DOM
+    const mainPage = document.getElementById('mainPage');
+    const formPage = document.getElementById('formPage');
+    const allRecordsPage = document.getElementById('allRecordsPage');
+    const omoPage = document.getElementById('omoPage');
+    const passwordModal = document.getElementById('passwordModal');
+    const bureausGrid = document.getElementById('bureausGrid');
+    const expertsGrid = document.getElementById('expertsGrid');
+    const modalBureauTitle = document.getElementById('modalBureauTitle');
+    const passwordInput = document.getElementById('passwordInput');
+    const passwordError = document.getElementById('passwordError');
+    const submitPassword = document.getElementById('submitPassword');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const backBtn = document.getElementById('backBtn');
+    const backToFormBtn = document.getElementById('backToFormBtn');
+    const backFromOmoBtn = document.getElementById('backFromOmoBtn');
+    const backToOmoBtn = document.getElementById('backToOmoBtn');
+    const viewAllBtn = document.getElementById('viewAllBtn');
+    const omoSelector = document.getElementById('omoSelector');
+    const pagination = document.getElementById('pagination');
+    const omoPagination = document.getElementById('omoPagination');
+    const notificationContainer = document.getElementById('notificationContainer');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const loadingText = document.getElementById('loadingText');
+
+    // Кэш клиентской стороны
+    const clientCache = {
+        data: {},
+        get: function(key) {
+            const item = this.data[key];
+            if (!item) return null;
+            if (item.expiry < Date.now()) {
+                delete this.data[key];
+                return null;
+            }
+            return item.value;
+        },
+        set: function(key, value, ttl = CACHE_TTL) {
+            this.data[key] = {
+                value: value,
+                expiry: Date.now() + ttl
+            };
+        },
+        delete: function(key) {
+            delete this.data[key];
+        },
+        clearBureauCache: function(bureauNumber) {
+            Object.keys(this.data).forEach(key => {
+                if (key.includes(`:${bureauNumber}:`)) {
+                    delete this.data[key];
+                }
+            });
+        }
+    };
+
+    // Текущее состояние
+    let currentBureau = null;
+    let isOmoMode = false;
+    let currentEditId = null;
+    let currentPage = 1;
+    let omoCurrentPage = 1;
+    let totalPages = 1;
+    let omoTotalPages = 1;
+    let currentSearchQuery = '';
+    let allRecordsSearchQuery = '';
+    let omoSearchQuery = '';
+    let unsavedChangesExist = false;
+    let loadingTimeout = null;
+    let isEditingFromAllRecords = false;
+
+    // ====== [Добавленные функции валидации дат] ======
+    function validateDate(dateString, fieldId) {
+        if (!dateString) {
+            document.getElementById(`${fieldId}Error`).style.display = 'none';
+            return true; // Пустые значения пропускаем
+        }
+        
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const errorElement = document.getElementById(`${fieldId}Error`);
+        
+        if (isNaN(date.getTime())) {
+            if (errorElement) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = 'Некорректная дата';
+            }
+            return false;
+        }
+        
+        if (year < 1900 || year > 2030) {
+            if (errorElement) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = 'Некорректная дата';
+            }
+            return false;
+        }
+        
+        if (errorElement) {
+            errorElement.style.display = 'none';
+        }
+        return true;
+    }
+
+    function setupDateValidation() {
+        const dateFields = ['birthDate', 'mseDate', 'decisionDate', 'regDate'];
+        
+        dateFields.forEach(fieldId => {
+            const input = document.getElementById(fieldId);
+            if (input) {
+                input.addEventListener('change', function() {
+                    validateDate(this.value, fieldId);
+                });
+                
+                input.addEventListener('blur', function() {
+                    validateDate(this.value, fieldId);
+                });
+            }
+        });
+    }
+    // ====== [Конец добавленных функций] ======
+
+    // Показ индикатора загрузки
+    function showLoading(message = 'Загрузка...') {
+        clearTimeout(loadingTimeout);
+        loadingTimeout = setTimeout(() => {
+            loadingText.textContent = message;
+            loadingOverlay.style.display = 'flex';
+        }, LOADING_DELAY);
+    }
+
+    // Скрытие индикатора загрузки
+    function hideLoading() {
+        clearTimeout(loadingTimeout);
+        loadingOverlay.style.display = 'none';
+    }
+
+    // Сохраняем состояние в localStorage
+    function saveState() {
+        const state = {
+            currentBureau: currentBureau,
+            isOmoMode: isOmoMode,
+            currentPage: currentPage,
+            omoCurrentPage: omoCurrentPage,
+            currentSearchQuery: currentSearchQuery,
+            allRecordsSearchQuery: allRecordsSearchQuery,
+            omoSearchQuery: omoSearchQuery,
+            isEditingFromAllRecords: isEditingFromAllRecords
+        };
+        localStorage.setItem('mseAppState', JSON.stringify(state));
+    }
+
+    // Восстанавливаем состояние из localStorage
+    function restoreState() {
+        const savedState = localStorage.getItem('mseAppState');
+        if (savedState) {
+            const state = JSON.parse(savedState);
+            currentBureau = state.currentBureau;
+            isOmoMode = state.isOmoMode;
+            currentPage = state.currentPage || 1;
+            omoCurrentPage = state.omoCurrentPage || 1;
+            currentSearchQuery = state.currentSearchQuery || '';
+            allRecordsSearchQuery = state.allRecordsSearchQuery || '';
+            omoSearchQuery = state.omoSearchQuery || '';
+            isEditingFromAllRecords = state.isEditingFromAllRecords || false;
+
+            currentEditId = null;
+            document.getElementById('saveBtn').textContent = 'Сохранить';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+            document.getElementById('clearFormBtn').style.display = 'block';
+
+            mainPage.style.display = 'block';
+            formPage.style.display = 'none';
+            allRecordsPage.style.display = 'none';
+            omoPage.style.display = 'none';
+
+            if (currentBureau) {
+                if (isOmoMode) {
+                    showOmoPage();
+                } else if (currentBureau.startsWith('bureau_') || currentBureau.startsWith('expert_')) {
+                    showFormPage();
+                }
+            }
+        }
+    }
+
+    // Создание карточек бюро и экспертов
+        function createBureauCards() {
+            bureausGrid.innerHTML = '';
+            expertsGrid.innerHTML = '';
+
+            for (let i = 1; i <= BUREAU_COUNT; i++) {
+                if (EXCLUDED_BUREAUS.includes(i)) continue;
+
+                const bureauCard = document.createElement('div');
+                bureauCard.className = 'bureau-card';
+                if (i === 40 || i === 42) {
+                    bureauCard.classList.add(`bureau-card-${i}`);
+                }
+                bureauCard.textContent = `Бюро №${i}`;
+                bureauCard.addEventListener('click', () => openPasswordModal(`bureau_${i}`));
+                bureausGrid.appendChild(bureauCard);
+            }
+
+            EXPERTS.forEach(expert => {
+                const expertCard = document.createElement('div');
+                expertCard.className = 'expert-card';
+                if (expert === 9) {
+                    expertCard.classList.add('expert-card-9');
+                }
+                expertCard.textContent = `Экспертный состав №${expert}`;
+                expertCard.addEventListener('click', () => openPasswordModal(`expert_${expert}`));
+                expertsGrid.appendChild(expertCard);
+            });
+        }
+
+    // Показ уведомлений
+    function showNotification(message, type = 'info', duration = 3000) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">${message}</div>
+            <button class="notification-close">&times;</button>
+        `;
+
+        notificationContainer.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+
+        const closeBtn = notification.querySelector('.notification-close');
+        closeBtn.addEventListener('click', () => {
+            closeNotification(notification);
+        });
+
+        if (duration > 0) {
+            setTimeout(() => {
+                closeNotification(notification);
+            }, duration);
+        }
+
+        return notification;
+    }
+
+    function closeNotification(notification) {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }
+
+    // Улучшенный запрос к API с кэшированием и обработкой ошибок
+    async function fetchWithCache(url, options = {}, cacheKey = null, ttl = CACHE_TTL) {
+        if (cacheKey) {
+            const cached = clientCache.get(cacheKey);
+            if (cached) return cached;
+        }
+
+        showLoading();
+
+        try {
+            const response = await fetch(url, options);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const data = await response.json();
+            if (cacheKey) clientCache.set(cacheKey, data, ttl);
+            
+            return data;
+        } catch (error) {
+            console.error('Fetch error:', error);
+            showNotification('Ошибка при загрузке данных. Проверьте подключение к серверу.', 'error', 5000);
+            throw error;
+        } finally {
+            hideLoading();
+        }
+    }
+
+    // Показать страницу формы
+    function showFormPage() {
+        document.getElementById('mseForm').reset();
+        mainPage.style.display = 'none';
+        allRecordsPage.style.display = 'none';
+        omoPage.style.display = 'none';
+        formPage.style.display = 'block';
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        document.getElementById('backBtn').style.display = 'inline-block';
+        document.getElementById('backToOmoBtn').style.display = 'none';
+            // Сбрасываем поисковый запрос при открытии формы
+        currentSearchQuery = '';
+        searchInput.value = '';
+        saveState();
+
+        if (currentBureau.startsWith('bureau_')) {
+            const bureauNum = currentBureau.split('_')[1];
+            document.getElementById('formBureauTitle').textContent = `Бюро №${bureauNum} - Медико-социальная экспертиза`;
+
+            // Показываем поля для бюро
+            document.getElementById('bureauDocumentFormatGroup').style.display = 'block';
+            document.getElementById('expertDocumentFormatGroup').style.display = 'none';
+            document.getElementById('procedureTypeGroup').style.display = 'none';
+            document.getElementById('bureauPurposeGroup').style.display = 'block';
+            document.getElementById('expertPurposeGroup').style.display = 'none';
+            document.getElementById('bureauIpraSection').style.display = 'block';
+            document.getElementById('expertAdditionalSection').style.display = 'none';
+        } else if (currentBureau.startsWith('expert_')) {
+            const expertNum = currentBureau.split('_')[1];
+            document.getElementById('formBureauTitle').textContent = `Экспертный состав №${expertNum} - Медико-социальная экспертиза`;
+
+            // Показываем поля для экспертного состава
+            document.getElementById('bureauDocumentFormatGroup').style.display = 'none';
+            document.getElementById('expertDocumentFormatGroup').style.display = 'block';
+            document.getElementById('procedureTypeGroup').style.display = 'block';
+            document.getElementById('bureauPurposeGroup').style.display = 'none';
+            document.getElementById('expertPurposeGroup').style.display = 'block';
+            document.getElementById('bureauIpraSection').style.display = 'none';
+            document.getElementById('expertAdditionalSection').style.display = 'block';
+        }
+
+        document.getElementById('bureauNumber').value = currentBureau;
+        loadBureauRecords();
+    }
+
+    // Показать страницу ОМО
+    function showOmoPage() {
+        mainPage.style.display = 'none';
+        formPage.style.display = 'none';
+        allRecordsPage.style.display = 'none';
+        omoPage.style.display = 'block';
+        isOmoMode = true;
+        initOmoPage();
+    }
+
+    // Обновление счетчика выбранных элементов
+    function updateSpecialMarksCounter() {
+        const checkboxes = document.querySelectorAll('.special-mark-checkbox:checked');
+        const counter = document.getElementById('specialMarksCounter');
+
+        if (counter) {
+            counter.textContent = `Выбрано: ${checkboxes.length}/3`;
+            counter.style.color = checkboxes.length > 3 ? 'var(--danger-color)' : 'var(--gray-color)';
+        }
+    }
+
+    // Настройка валидации особых отметок
+    function setupSpecialMarksValidation() {
+        const checkboxes = document.querySelectorAll('.special-mark-checkbox');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const checkedCount = document.querySelectorAll('.special-mark-checkbox:checked').length;
+                updateSpecialMarksCounter();
+
+                if (checkedCount > 3) {
+                    showNotification('Можно выбрать не более 3 особых отметок', 'error', 3000);
+                    this.checked = false;
+                    updateSpecialMarksCounter();
+                }
+            });
+        });
+    }
+
+    // Нормализация ФИО - удаление лишних пробелов
+    function normalizeFullName(fullName) {
+        if (!fullName) return '';
+        return fullName.trim().replace(/\s+/g, ' ');
+    }
+
+    // Обработчик для поля ФИО
+    function setupFullNameInput() {
+        const fullNameInput = document.getElementById('fullName');
+
+        fullNameInput.addEventListener('input', function(e) {
+            const cursorPosition = this.selectionStart;
+            const currentValue = this.value;
+            let normalized = currentValue.replace(/\s+/g, ' ');
+
+            if (normalized.startsWith(' ')) {
+                normalized = normalized.substring(1);
+            }
+
+            if (currentValue !== normalized) {
+                this.value = normalized;
+                const diff = currentValue.length - normalized.length;
+                const newCursorPosition = Math.max(0, cursorPosition - diff);
+                this.setSelectionRange(newCursorPosition, newCursorPosition);
+            }
+        });
+
+        fullNameInput.addEventListener('blur', function() {
+            this.value = this.value
+                .replace(/\s+/g, ' ')
+                .replace(/^\s+|\s+$/g, '');
+        });
+
+        fullNameInput.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                this.value = this.value
+                    .replace(/\s+/g, ' ')
+                    .replace(/^\s+|\s+$/g, '');
+            }, 0);
+        });
+    }
+
+    // Инициализация формы
+    function initForm() {
+        const form = document.getElementById('mseForm');
+
+        form.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') e.preventDefault();
+        });
+
+        form.addEventListener('input', function() {
+            unsavedChangesExist = true;
+        });
+
+         // Настройка полей СНИЛС
+        setupSnilsInput(document.getElementById('snils')); // Поле в форме
+        setupSnilsInput(document.getElementById('searchInput')); // Поиск в профиле бюро
+        setupSnilsInput(document.getElementById('allRecordsSearchInput')); // Поиск в "Все записи"
+        setupSnilsInput(document.getElementById('omoSearchInput')); // Поиск в ОМО
+
+        // Обработчики поиска
+        searchBtn.addEventListener('click', function() {
+            currentSearchQuery = cleanSnils(searchInput.value);
+            saveState();
+            loadBureauRecords();
+        });
+
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                currentSearchQuery = cleanSnils(searchInput.value);
+                saveState();
+                loadBureauRecords();
+            }
+        });
+
+        allRecordsSearchBtn.addEventListener('click', function() {
+            allRecordsSearchQuery = cleanSnils(allRecordsSearchInput.value);
+            currentPage = 1;
+            saveState();
+            loadAllRecords();
+        });
+
+        allRecordsSearchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                allRecordsSearchQuery = cleanSnils(allRecordsSearchInput.value);
+                currentPage = 1;
+                saveState();
+                loadAllRecords();
+            }
+        });
+
+        omoSearchBtn.addEventListener('click', function() {
+            omoSearchQuery = cleanSnils(omoSearchInput.value);
+            omoCurrentPage = 1;
+            saveState();
+            loadOmoRecords();
+        });
+
+        omoSearchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                omoSearchQuery = cleanSnils(omoSearchInput.value);
+                omoCurrentPage = 1;
+                saveState();
+                loadOmoRecords();
+            }
+        });
+
+        // Обработчик очистки формы
+        document.getElementById('clearFormBtn').addEventListener('click', function() {
+            if (!hasUnsavedChanges()) {
+                showNotification('Форма уже пустая, нет данных для очистки', 'info', 2000);
+                return;
+            }
+
+            const confirmNotification = showNotification(
+                '<div style="margin-bottom: 10px; font-weight: bold;">Вы уверены, что хотите очистить форму?</div>' +
+                '<div style="margin-bottom: 15px;">Все несохраненные изменения будут потеряны.</div>' +
+                '<div class="notification-actions">' +
+                '<button class="btn btn-danger confirm-btn">Очистить</button>' +
+                '<button class="btn btn-secondary cancel-btn">Отменить</button>' +
+                '</div>',
+                'warning',
+                0
+            );
+
+            confirmNotification.querySelector('.confirm-btn').addEventListener('click', function() {
+                closeNotification(confirmNotification);
+                resetForm();
+                showNotification('Форма успешно очищена', 'success', 2000);
+                unsavedChangesExist = false;
+            });
+
+            confirmNotification.querySelector('.cancel-btn').addEventListener('click', function() {
+                closeNotification(confirmNotification);
+            });
+        });
+
+        // Обработчик кнопки "Назад к записям ОМО"
+        document.getElementById('backToOmoBtn').addEventListener('click', goBackToOmoPage);
+
+        // Обработчик отправки формы
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveRecord();
+        });
+
+        document.getElementById('cancelEditBtn').addEventListener('click', function() {
+            if (isOmoMode) {
+                goBackToOmoPage();
+            } else if (isEditingFromAllRecords) {
+                goBackToAllRecordsPage();
+            } else {
+                resetForm();
+                showNotification('Редактирование отменено', 'info', 2000);
+                unsavedChangesExist = false;
+            }
+        });
+
+        // Обработчик события перед закрытием/обновлением страницы
+        window.addEventListener('beforeunload', function(e) {
+            if (formPage.style.display === 'block' && hasUnsavedChanges()) {
+                e.preventDefault();
+                e.returnValue = 'У вас есть несохраненные данные';
+                return e.returnValue;
+            }
+        });
+
+        // Настройка валидации дат
+        setupDateValidation();
+        
+        // Добавляем обработчики для подсветки заполненных полей
+        setupFieldHighlighting();
+    }
+
+    // Настройка подсветки заполненных полей
+    function setupFieldHighlighting() {
+        const formControls = document.querySelectorAll('.form-control');
+
+        formControls.forEach(control => {
+            // Проверяем начальное состояние
+            updateFieldHighlight(control);
+
+            // Добавляем обработчики событий
+            control.addEventListener('input', function() {
+                updateFieldHighlight(this);
+            });
+
+            control.addEventListener('change', function() {
+                updateFieldHighlight(this);
+            });
+
+            control.addEventListener('blur', function() {
+                updateFieldHighlight(this);
+            });
+        });
+
+        // Для селектов и чекбоксов
+        const selects = document.querySelectorAll('select.form-control');
+        selects.forEach(select => {
+            updateFieldHighlight(select);
+
+            select.addEventListener('change', function() {
+                updateFieldHighlight(this);
+            });
+        });
+    }
+    
+    // Обновление подсветки поля
+    function updateFieldHighlight(field) {
+        if (!field) return;
+
+        // Удаляем предыдущие классы
+        field.classList.remove('filled', 'empty');
+
+        // Проверяем, заполнено ли поле
+        let isFilled = false;
+
+        if (field.type === 'checkbox' || field.type === 'radio') {
+            isFilled = field.checked;
+        } else if (field.tagName === 'SELECT') {
+            isFilled = field.value !== '';
+        } else {
+            isFilled = field.value.trim() !== '';
+        }
+
+        // Добавляем соответствующий класс
+        if (isFilled) {
+            field.classList.add('filled');
+        } else {
+            // Для ВСЕХ полей добавляем empty, если они пустые
+            field.classList.add('empty');
+        }
+    }
+
+    // Проверяет, есть ли несохраненные данные в форме
+    function hasUnsavedChanges() {
+        if (!unsavedChangesExist) return false;
+
+        const form = document.getElementById('mseForm');
+        let hasChanges = false;
+
+        const fieldsToCheck = Array.from(form.elements).filter(el => 
+            el.type !== 'hidden' && 
+            el.tagName !== 'BUTTON' && 
+            el.id !== 'recordId'
+        );
+
+        for (const element of fieldsToCheck) {
+            if (element.classList.contains('special-mark-checkbox')) {
+                if (element.checked) {
+                    hasChanges = true;
+                    break;
+                }
+            } else if (element.value && element.value.trim() !== '') {
+                hasChanges = true;
+                break;
+            }
+        }
+
+        return hasChanges;
+    }
+
+    // Поиск записей
+    function searchRecords() {
+        currentSearchQuery = cleanSnils(searchInput.value);
+        saveState();
+        loadBureauRecords();
+    }
+
+    function searchAllRecords() {
+        allRecordsSearchQuery = cleanSnils(allRecordsSearchInput.value);
+        currentPage = 1;
+        saveState();
+        loadAllRecords();
+    }
+
+    function searchOmoRecords() {
+        const searchValue = omoSearchInput.value.trim();
+        omoSearchQuery = searchValue;
+        omoCurrentPage = 1;
+        saveState();
+        loadOmoRecords();
+    }
+
+    // Очистка СНИЛС от всех нецифровых символов
+    function cleanSnils(snils) {
+        return snils ? snils.replace(/\D/g, '') : '';
+    }
+
+    // Работа с модальным окном пароля
+    function openPasswordModal(target) {
+        if (target === 'omo') {
+            currentBureau = 'omo';
+            modalBureauTitle.textContent = 'Профиль ОМО';
+        } else if (target.startsWith('bureau_')) {
+            currentBureau = target;
+            const bureauNum = target.split('_')[1];
+            modalBureauTitle.textContent = `Бюро №${bureauNum}`;
+        } else if (target.startsWith('expert_')) {
+            currentBureau = target;
+            const expertNum = target.split('_')[1];
+            modalBureauTitle.textContent = `Экспертный состав №${expertNum}`;
+        }
+
+        passwordModal.style.display = 'flex';
+        passwordInput.value = '';
+        passwordError.style.display = 'none';
+        passwordInput.focus();
+    }
+
+    async function checkPassword() {
+        const enteredPassword = passwordInput.value;
+
+        try {
+            showLoading('Проверка пароля...');
+            const data = await fetchWithCache(
+                `${API_BASE_URL}/password/${currentBureau}`,
+                { headers: { 'Accept': 'application/json' } },
+                `password:${currentBureau}`,
+                3600000 // 1 час для паролей
+            );
+
+            if (enteredPassword === data.password) {
+                closePasswordModal();
+                isOmoMode = currentBureau === 'omo';
+                saveState();
+                if (isOmoMode) {
+                    showOmoPage();
+                } else {
+                    showFormPage();
+                }
+                return;
+            }
+
+            passwordError.style.display = 'block';
+            passwordInput.focus();
+            showNotification('Неверный пароль!', 'error', 3000);
+        } catch (error) {
+            console.error('Ошибка при проверке пароля:', error);
+            showNotification('Ошибка при проверке пароля. Проверьте подключение к серверу.', 'error', 3000);
+        } finally {
+            hideLoading();
+        }
+    }
+
+    function closePasswordModal() {
+        passwordModal.style.display = 'none';
+    }
+
+    // Навигация
+    function goBackToMainPage() {
+        if (hasUnsavedChanges()) {
+            const confirmNotification = showNotification(
+                '<div style="margin-bottom: 10px; font-weight: bold;">У вас есть несохраненные данные</div>' +
+                '<div style="margin-bottom: 15px;">Все несохраненные изменения будут потеряны.</div>' +
+                '<div class="notification-actions">' +
+                '<button class="btn btn-primary stay-btn">Остаться</button>' +
+                '<button class="btn btn-danger leave-btn">Выйти</button>' +
+                '</div>',
+                'warning',
+                0
+            );
+
+            confirmNotification.querySelector('.stay-btn').addEventListener('click', function() {
+                closeNotification(confirmNotification);
+            });
+
+            confirmNotification.querySelector('.leave-btn').addEventListener('click', function() {
+                closeNotification(confirmNotification);
+                forceGoBackToMainPage();
+            });
+        } else {
+            forceGoBackToMainPage();
+        }
+    }
+
+    function forceGoBackToMainPage() {
+        document.getElementById('mseForm').reset();
+        formPage.style.display = 'none';
+        allRecordsPage.style.display = 'none';
+        omoPage.style.display = 'none';
+        mainPage.style.display = 'block';
+        currentBureau = null;
+        isOmoMode = false;
+        currentEditId = null;
+        isEditingFromAllRecords = false;
+        backToOmoBtn.style.display = 'none';
+        document.getElementById('saveBtn').textContent = 'Сохранить';
+        document.getElementById('cancelEditBtn').style.display = 'none';
+        document.getElementById('clearFormBtn').style.display = 'block';
+        saveState();
+        unsavedChangesExist = false;
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goBackToFormPage() {
+        allRecordsPage.style.display = 'none';
+        formPage.style.display = 'block';
+        backToOmoBtn.style.display = 'none';
+        isEditingFromAllRecords = false;
+        saveState();
+    }
+
+    function goBackToAllRecordsPage() {
+        document.getElementById('mseForm').reset();
+        currentEditId = null;
+        document.getElementById('saveBtn').textContent = 'Сохранить';
+        document.getElementById('cancelEditBtn').style.display = 'none';
+        document.getElementById('clearFormBtn').style.display = 'block';
+        isEditingFromAllRecords = false;
+        
+        formPage.style.display = 'none';
+        allRecordsPage.style.display = 'block';
+        saveState();
+        loadAllRecords();
+        unsavedChangesExist = false;
+    }
+
+    function goBackToOmoPage() {
+        document.getElementById('mseForm').reset();
+        currentEditId = null;
+        document.getElementById('saveBtn').textContent = 'Сохранить';
+        document.getElementById('cancelEditBtn').style.display = 'none';
+        document.getElementById('clearFormBtn').style.display = 'block';
+        document.getElementById('backToOmoBtn').style.display = 'none';
+        document.getElementById('backBtn').style.display = 'inline-block';
+
+        const bureauNumber = document.getElementById('bureauNumber').value;
+        if (bureauNumber.startsWith('bureau_')) {
+            const bureauNum = bureauNumber.split('_')[1];
+            document.getElementById('formBureauTitle').textContent = `Бюро №${bureauNum} - Редактирование записи`;
+        } else if (bureauNumber.startsWith('expert_')) {
+            const expertNum = bureauNumber.split('_')[1];
+            document.getElementById('formBureauTitle').textContent = `Экспертный состав №${expertNum} - Редактирование записи`;
+        }
+
+        currentBureau = 'omo';
+        isOmoMode = true;
+        saveState();
+        formPage.style.display = 'none';
+        omoPage.style.display = 'block';
+        loadOmoRecords();
+        unsavedChangesExist = false;
+    }
+
+    async function showAllRecords() {
+        formPage.style.display = 'none';
+        allRecordsPage.style.display = 'block';
+        backToOmoBtn.style.display = 'none';
+        isEditingFromAllRecords = false;
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        const bureauNumber = document.getElementById('bureauNumber').value;
+        if (bureauNumber.startsWith('bureau_')) {
+            const bureauNum = bureauNumber.split('_')[1];
+            document.getElementById('allRecordsTitle').textContent = `Все записи Бюро №${bureauNum}`;
+        } else if (bureauNumber.startsWith('expert_')) {
+            const expertNum = bureauNumber.split('_')[1];
+            document.getElementById('allRecordsTitle').textContent = `Все записи Экспертного состава №${expertNum}`;
+        }
+            // Сбрасываем поисковый запрос при открытии всех записей
+        allRecordsSearchQuery = '';
+        allRecordsSearchInput.value = '';
+        saveState();
+
+        currentPage = 1;
+        loadAllRecords();
+    }
+
+    // Загрузка записей бюро (последние 10 записей без пагинации)
+    async function loadBureauRecords() {
+        try {
+            const bureauNumber = document.getElementById('bureauNumber').value;
+            if (!bureauNumber) return;
+
+            showLoading('Загрузка записей бюро...');
+
+            const data = await fetchWithCache(
+                `${API_BASE_URL}/records/${bureauNumber}?limit=${BUREAU_INITIAL_RECORDS}&search=${encodeURIComponent(currentSearchQuery)}`,
+                {},
+                `records:${bureauNumber}:${BUREAU_INITIAL_RECORDS}:${currentSearchQuery}`
+            );
+
+            renderRecordsTable(data.data);
+            updateRecordsCount();
+        } catch (error) {
+            console.error('Error loading records:', error);
+            showNotification('Не удалось загрузить записи', 'error', 3000);
+            renderRecordsTable([]);
+        } finally {
+            hideLoading();
+        }
+    }
+
+    // Загрузка всех записей (для страницы "Все записи")
+    async function loadAllRecords() {
+        try {
+            const bureauNumber = document.getElementById('bureauNumber').value;
+            const skip = (currentPage - 1) * RECORDS_PER_PAGE;
+
+            showLoading('Загрузка всех записей...');
+            const data = await fetchWithCache(
+                `${API_BASE_URL}/records/${bureauNumber}?skip=${skip}&limit=${RECORDS_PER_PAGE}&search=${encodeURIComponent(allRecordsSearchQuery)}`,
+                {},
+                `allRecords:${bureauNumber}:${skip}:${RECORDS_PER_PAGE}:${allRecordsSearchQuery}`
+            );
+
+            renderAllRecordsTable(data.data);
+
+            // Получаем общее количество для пагинации
+            const countData = await fetchWithCache(
+                `${API_BASE_URL}/records/${bureauNumber}/count?search=${encodeURIComponent(allRecordsSearchQuery)}`,
+                {},
+                `countAll:${bureauNumber}:${allRecordsSearchQuery}`
+            );
+
+            allRecordsCount.textContent = countData.count;
+            totalPages = Math.ceil(countData.count / RECORDS_PER_PAGE);
+            renderPagination();
+        } catch (error) {
+            console.error('Error loading all records:', error);
+            showNotification('Не удалось загрузить все записи', 'error', 3000);
+        } finally {
+            hideLoading();
+        }
+    }
+
+    // Инициализация страницы ОМО
+    function initOmoPage() {
+        omoSelector.innerHTML = '<option value="">Все записи</option>';
+
+        for (let i = 1; i <= BUREAU_COUNT; i++) {
+            if (EXCLUDED_BUREAUS.includes(i)) continue;
+
+            const option = document.createElement('option');
+            option.value = `bureau_${i}`;
+            option.textContent = `Бюро №${i}`;
+            omoSelector.appendChild(option);
+        }
+
+        EXPERTS.forEach(expert => {
+            const option = document.createElement('option');
+            option.value = `expert_${expert}`;
+            option.textContent = `Экспертный состав №${expert}`;
+            omoSelector.appendChild(option);
+        });
+            // Сбрасываем поисковый запрос при открытии ОМО
+        omoSearchQuery = '';
+        omoSearchInput.value = '';
+
+        // Убираем подсветку поля выбора бюро
+        const omoSelectorElement = document.getElementById('omoSelector');
+        if (omoSelectorElement) {
+            omoSelectorElement.classList.remove('filled', 'empty');
+        }
+
+        omoCurrentPage = 1;
+        omoSearchQuery = '';
+        omoSearchInput.value = '';
+
+        loadOmoRecords();
+    }
+
+    // Загрузка записей ОМО (с пагинацией)
+    async function loadOmoRecords() {
+        try {
+            const selectedBureau = omoSelector.value;
+            const skip = (omoCurrentPage - 1) * OMO_RECORDS_PER_PAGE;
+
+            showLoading('Загрузка записей ОМО...');
+
+            let url;
+            if (!selectedBureau || selectedBureau === "") {
+                url = `${API_BASE_URL}/omo/records?skip=${skip}&limit=${OMO_RECORDS_PER_PAGE}`;
+            } else {
+                url = `${API_BASE_URL}/records/${selectedBureau}?skip=${skip}&limit=${OMO_RECORDS_PER_PAGE}`;
+            }
+
+            if (omoSearchQuery) {
+                url += `&search=${encodeURIComponent(omoSearchQuery)}`;
+            }
+
+            const data = await fetchWithCache(
+                url,
+                {},
+                `omoRecords:${selectedBureau || 'all'}:${skip}:${OMO_RECORDS_PER_PAGE}:${omoSearchQuery}`
+            );
+
+            renderOmoRecordsTable(data.data || []);
+
+            // Получаем общее количество записей
+            let countUrl;
+            if (!selectedBureau || selectedBureau === "") {
+                countUrl = `${API_BASE_URL}/omo/records/count`;
+            } else {
+                countUrl = `${API_BASE_URL}/records/${selectedBureau}/count`;
+            }
+
+            if (omoSearchQuery) {
+                countUrl += `?search=${encodeURIComponent(omoSearchQuery)}`;
+            }
+
+            const countData = await fetchWithCache(
+                countUrl,
+                {},
+                `omoCount:${selectedBureau || 'all'}:${omoSearchQuery}`
+            );
+
+            omoRecordsCount.textContent = countData.count || 0;
+            omoTotalPages = Math.ceil((countData.count || 0) / OMO_RECORDS_PER_PAGE);
+            renderOmoPagination();
+        } catch (error) {
+            console.error('Error loading OMO records:', error);
+            showNotification('Не удалось загрузить записи ОМО', 'error', 3000);
+        } finally {
+            hideLoading();
+        }
+    }
+
+    // Рендер таблицы записей для профиля бюро
+    function renderRecordsTable(records) {
+        const tbody = document.querySelector('#recordsTable tbody');
+        tbody.innerHTML = '';
+
+        if (records.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="5" class="no-records">Нет записей</td>`;
+            tbody.appendChild(row);
+            return;
+        }
+
+        records.forEach(record => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${formatDate(record.mseDate || record.mse_date)}</td>
+                <td>${record.fullName || record.full_name || ''}</td>
+                <td>${formatDate(record.birthDate || record.birth_date)}</td>
+                <td>${record.snils || ''}</td>
+                <td>
+                    <button class="edit-btn" data-id="${record.id}">Изменить</button>
+                    <button class="delete-btn" data-id="${record.id}">Удалить</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Добавляем обработчики событий для кнопок
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                editRecord(this.dataset.id);
+            });
+        });
+
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                deleteRecordConfirmation(this.dataset.id);
+            });
+        });
+    }
+
+    // Рендер таблицы всех записей (для страницы "Все записи")
+    function renderAllRecordsTable(records) {
+        const tbody = document.querySelector('#allRecordsTable tbody');
+        tbody.innerHTML = '';
+
+        if (records.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="5" class="no-records">Нет записей</td>`;
+            tbody.appendChild(row);
+            return;
+        }
+
+        records.forEach(record => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${formatDate(record.mseDate || record.mse_date)}</td>
+                <td>${record.fullName || record.full_name || ''}</td>
+                <td>${formatDate(record.birthDate || record.birth_date)}</td>
+                <td>${record.snils || ''}</td>
+                <td>
+                    <button class="edit-btn" data-id="${record.id}">Изменить</button>
+                    <button class="delete-btn" data-id="${record.id}">Удалить</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Добавляем обработчики событий для кнопок
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                editRecord(this.dataset.id, false, true);
+            });
+        });
+
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                deleteRecordConfirmation(this.dataset.id);
+            });
+        });
+    }
+
+    // Рендер таблицы записей для ОМО
+    function renderOmoRecordsTable(records) {
+        const tbody = document.querySelector('#omoRecordsTable tbody');
+        tbody.innerHTML = '';
+
+        if (!records || records.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="6" class="no-records">Нет записей</td>`;
+            tbody.appendChild(row);
+            return;
+        }
+
+        records.forEach(record => {
+            if (!record) return;
+
+            let source = "";
+            const bureauNumber = record.bureauNumber || record.bureau_number;
+
+            if (bureauNumber) {
+                if (bureauNumber.startsWith("bureau_")) {
+                    source = `Бюро №${bureauNumber.split('_')[1]}`;
+                } else if (bureauNumber.startsWith("expert_")) {
+                    source = `ЭС №${bureauNumber.split('_')[1]}`;
+                } else {
+                    source = bureauNumber;
+                }
+            } else {
+                source = 'Нет данных';
+            }
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${source}</td>
+                <td>${formatDate(record.mseDate || record.mse_date)}</td>
+                <td>${record.fullName || record.full_name || ''}</td>
+                <td>${formatDate(record.birthDate || record.birth_date)}</td>
+                <td>${record.snils || ''}</td>
+                <td>
+                    <button class="edit-btn" data-id="${record.id}">Изменить</button>
+                    <button class="delete-btn" data-id="${record.id}">Удалить</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                editRecord(this.dataset.id, true);
+            });
+        });
+
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                deleteRecordConfirmation(this.dataset.id);
+            });
+        });
+    }
+
+    // Форматирование даты
+    function formatDate(dateString) {
+        if (!dateString) return '';
+
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${day}.${month}.${year}`;
+    }
+    function formatSnils(inputValue) {
+        // Удаляем все нецифровые символы
+        const cleaned = inputValue.replace(/\D/g, '');
+        
+        // Форматируем по шаблону XXX-XXX-XXX XX
+        let formatted = '';
+        
+        if (cleaned.length > 0) {
+            formatted = cleaned.substring(0, 3);
+        }
+        if (cleaned.length > 3) {
+            formatted += '-' + cleaned.substring(3, 6);
+        }
+        if (cleaned.length > 6) {
+            formatted += '-' + cleaned.substring(6, 9);
+        }
+        if (cleaned.length > 9) {
+            formatted += ' ' + cleaned.substring(9, 11);
+        }
+        
+        return formatted;
+    }
+    // Настройка поля СНИЛС
+    function setupSnilsInput(inputElement) {
+        if (!inputElement) return;
+
+        // Обработчик ввода данных
+        inputElement.addEventListener('input', function(e) {
+            // Сохраняем позицию курсора
+            const cursorPosition = this.selectionStart;
+            
+            // Получаем текущее значение
+            const currentValue = this.value;
+            
+            // Форматируем СНИЛС
+            const formattedValue = formatSnils(currentValue);
+            
+            // Если значение изменилось, обновляем поле
+            if (currentValue !== formattedValue) {
+                this.value = formattedValue;
+                
+                // Корректируем позицию курсора
+                let newCursorPosition = cursorPosition;
+                
+                // Если мы вводим символ перед дефисом/пробелом, перемещаем курсор вперед
+                if (
+                    (cursorPosition === 4 && formattedValue.charAt(3) === '-') ||
+                    (cursorPosition === 8 && formattedValue.charAt(7) === '-') ||
+                    (cursorPosition === 12 && formattedValue.charAt(11) === ' ')
+                ) {
+                    newCursorPosition = cursorPosition + 1;
+                }
+                
+                // Устанавливаем новую позицию курсора
+                this.setSelectionRange(newCursorPosition, newCursorPosition);
+            }
+        });
+
+        // Обработчик вставки данных
+        inputElement.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const cleaned = pastedText.replace(/\D/g, '');
+            const formatted = formatSnils(cleaned);
+            
+            // Вставляем отформатированное значение
+            document.execCommand('insertText', false, formatted);
+        });
+
+        // Обработчик потери фокуса - финальная проверка
+        inputElement.addEventListener('blur', function() {
+            const cleaned = this.value.replace(/\D/g, '');
+            if (cleaned.length > 0 && cleaned.length < 11) {
+                showNotification('СНИЛС должен содержать 11 цифр', 'warning', 3000);
+            }
+            this.value = formatSnils(this.value);
+        });
+    }
+
+    function formatSnilsString(digits) {
+        let formatted = '';
+        if (digits.length > 0) formatted = digits.substring(0, 3);
+        if (digits.length > 3) formatted += '-' + digits.substring(3, 6);
+        if (digits.length > 6) formatted += '-' + digits.substring(6, 9);
+        if (digits.length > 9) formatted += ' ' + digits.substring(9, 11);
+        return formatted;
+    }
+
+    // Редактирование записи
+    async function editRecord(recordId, fromOmo = false, fromAllRecords = false) {
+        try {
+            showLoading('Загрузка записи...');
+
+            // Принудительно обновляем кэш, добавляя временную метку
+            const timestamp = Date.now();
+            const record = await fetchWithCache(
+                `${API_BASE_URL}/records/omo/${recordId}?t=${timestamp}`,
+                {},
+                `record:${recordId}`
+            );
+
+            if (!record || typeof record !== 'object') {
+                throw new Error('Неверный формат данных записи');
+            }
+
+            const recordBureau = record.bureau_number || record.bureauNumber;
+            if (!recordBureau) {
+                throw new Error('Запись не принадлежит ни одному бюро/составу');
+            }
+
+            if (fromOmo) {
+                currentBureau = recordBureau;
+                isOmoMode = true;
+                saveState();
+
+                showFormPage();
+
+                if (recordBureau.startsWith('bureau_')) {
+                    const bureauNum = recordBureau.split('_')[1];
+                    document.getElementById('formBureauTitle').textContent = `Бюро №${bureauNum} - Редактирование записи`;
+                } else if (recordBureau.startsWith('expert_')) {
+                    const expertNum = recordBureau.split('_')[1];
+                    document.getElementById('formBureauTitle').textContent = `Экспертный состав №${expertNum} - Редактирование записи`;
+                }
+
+                document.getElementById('backToOmoBtn').style.display = 'inline-block';
+                document.getElementById('backBtn').style.display = 'none';
+            } else if (fromAllRecords) {
+                isEditingFromAllRecords = true;
+                currentBureau = recordBureau;
+                saveState();
+                
+                showFormPage();
+                
+                if (recordBureau.startsWith('bureau_')) {
+                    const bureauNum = recordBureau.split('_')[1];
+                    document.getElementById('formBureauTitle').textContent = `Бюро №${bureauNum} - Редактирование записи`;
+                } else if (recordBureau.startsWith('expert_')) {
+                    const expertNum = recordBureau.split('_')[1];
+                    document.getElementById('formBureauTitle').textContent = `Экспертный состав №${expertNum} - Редактирование записи`;
+                }
+            } else {
+                currentBureau = recordBureau;
+                saveState();
+                showFormPage();
+            }
+
+            fillFormWithRecordData(record);
+
+            // Убедимся, что recordId - число
+            currentEditId = parseInt(recordId);
+            document.getElementById('saveBtn').textContent = 'Обновить';
+            document.getElementById('cancelEditBtn').style.display = 'inline-block';
+            document.getElementById('clearFormBtn').style.display = 'none';
+            document.getElementById('bureauNumber').value = recordBureau;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            showNotification('Запись загружена для редактирования', 'success', 2000);
+            unsavedChangesExist = false;
+        } catch (error) {
+            console.error('Error editing record:', error);
+            showNotification(`Не удалось загрузить запись: ${error.message}`, 'error', 5000);
+
+            if (fromOmo) {
+                goBackToOmoPage();
+            } else if (fromAllRecords) {
+                goBackToAllRecordsPage();
+            }
+        } finally {
+            hideLoading();
+        }
+    }
+
+    // Заполнение формы данными записи
+    function fillFormWithRecordData(record) {
+        if (!record) {
+            console.error('Record is undefined');
+            return;
+        }
+
+        const bureauNumber = record.bureau_number || record.bureauNumber;
+        if (!bureauNumber) {
+            console.error('bureauNumber is missing in record:', record);
+            return;
+        }
+        // Форматируем СНИЛС при загрузке записи
+        const snilsField = document.getElementById('snils');
+        if (snilsField) {
+            snilsField.value = formatSnils(record.snils || '');
+            updateFieldHighlight(snilsField);
+        }
+
+        function setValue(id, value) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.value = value || '';
+                updateFieldHighlight(element);
+            } else {
+                console.warn(`Element with id ${id} not found`);
+            }
+        }
+
+        // Основные данные
+        setValue('fullName', record.fullName || record.full_name);
+        setValue('birthDate', record.birthDate || record.birth_date);
+        setValue('snils', record.snils);
+        setValue('ageCategory', record.ageCategory || record.age_category);
+        setValue('mseDate', record.mseDate || record.mse_date);
+        setValue('decisionDate', record.decisionDate || record.decision_date);
+        setValue('regDate', record.regDate || record.reg_date);
+        setValue('militaryRegistration', record.militaryRegistration || record.military_registration);
+
+        // Обработка особых отметок
+        const specialMarksValue = record.specialMarks || record.special_marks || '';
+        if (specialMarksValue) {
+            document.querySelectorAll('.special-mark-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+                updateFieldHighlight(checkbox);
+            });
+
+            const marksArray = specialMarksValue.split(',');
+            marksArray.forEach(mark => {
+                const cleanMark = mark.trim();
+                const checkbox = document.querySelector(`.special-mark-checkbox[value="${cleanMark}"]`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                    updateFieldHighlight(checkbox);
+                }
+            });
+        }
+        updateSpecialMarksCounter();
+
+        // Поля, зависящие от типа бюро
+        if (bureauNumber.startsWith('expert_')) {
+            // Для экспертных составов используем стандартные имена полей, но заполняем в соответствующие элементы
+            setValue('expertDocumentFormat', record.documentFormat || record.document_format);
+            setValue('procedureType', record.procedureType || record.procedure_type);
+            setValue('expertPurpose', record.purpose);
+            setValue('pdoDevelopedExpert', record.pdoDeveloped || record.pdo_developed);
+            setValue('decisionChangedPart', record.decisionChangedPart || record.decision_changed_part);
+            setValue('tsrChanged', record.tsrChanged || record.tsr_changed);
+            setValue('sfrAppeal', record.sfrAppeal || record.sfr_appeal);
+            setValue('changed', record.changed);
+        } else {
+            setValue('documentFormat', record.documentFormat || record.document_format);
+            setValue('purpose', record.purpose);
+            setValue('ipraDirection', record.ipraDirection || record.ipra_direction);
+            setValue('ipraContainsTsr', record.ipraContainsTsr || record.ipra_contains_tsr);
+            setValue('ipraChanges', record.ipraChanges || record.ipra_changes);
+            setValue('pdoDeveloped', record.pdoDeveloped || record.pdo_developed);
+        }
+
+        // Общие поля
+        setValue('mseType', record.mseType || record.mse_type);
+        setValue('mseFormSelect', record.mseForm || record.mse_form);
+        setValue('mseFormChange', record.mseFormChange || record.mse_form_change);
+        setValue('prevDisability', record.prevDisability || record.prev_disability);
+        setValue('prevDisabilityReason', record.prevDisabilityReason || record.prev_disability_reason);
+        setValue('prevDisabilityTerm', record.prevDisabilityTerm || record.prev_disability_term);
+        setValue('currentDisability', record.currentDisability || record.current_disability);
+        setValue('currentDisabilityReason', record.currentDisabilityReason || record.current_disability_reason);
+        setValue('currentDisabilityTerm', record.currentDisabilityTerm || record.current_disability_term);
+        setValue('mainDiagnosis', record.mainDiagnosis || record.main_diagnosis);
+    }
+
+    // Сохранение записи
+    async function saveRecord() {
+        const form = document.getElementById('mseForm');
+        const formData = new FormData(form);
+        const recordData = {};
+        const isEditingFromOmo = isOmoMode && document.getElementById('backToOmoBtn').style.display === 'inline-block';
+
+
+        // Проверка всех дат перед сохранением
+        const dateFields = [
+            { id: 'birthDate', required: false },
+            { id: 'mseDate', required: true },
+            { id: 'decisionDate', required: false },
+            { id: 'regDate', required: false }
+        ];
+
+        let allDatesValid = true;
+        
+        for (const field of dateFields) {
+            const value = document.getElementById(field.id).value;
+            if (field.required && !value) {
+                showNotification(`Поле "${document.querySelector(`label[for="${field.id}"]`).textContent}" обязательно для заполнения`, 'error', 3000);
+                document.getElementById(field.id).focus();
+                return;
+            }
+            
+            if (value && !validateDate(value, field.id)) {
+                allDatesValid = false;
+            }
+        }
+
+        if (!allDatesValid) {
+            showNotification('Пожалуйста, исправьте ошибки в датах', 'error', 3000);
+            return;
+        }
+
+        formData.forEach((value, key) => {
+            if (key === 'specialMarks') {
+                const checkedBoxes = Array.from(document.querySelectorAll('.special-mark-checkbox:checked'));
+                recordData[key] = checkedBoxes.map(box => box.value).join(',');
+            } else if (value) {
+                if (key !== 'bureauNumber') {
+                    recordData[key] = value;
+                }
+            }
+        });
+
+        if (recordData.fullName) {
+            recordData.fullName = normalizeFullName(recordData.fullName);
+        }
+
+        if (!recordData.mseDate) {
+            showNotification('Поле "Дата проведения МСЭ" обязательно для заполнения', 'error', 3000);
+            document.getElementById('mseDate').focus();
+            return;
+        }
+
+        try {
+            showLoading('Сохранение записи...');
+
+            const response = await fetch(`${API_BASE_URL}/records`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    bureauNumber: currentBureau,
+                    record: recordData,
+                    recordId: currentEditId || undefined
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Ошибка сервера');
+            }
+                    // Очищаем СНИЛС от форматирования перед сохранением
+        const snilsField = document.getElementById('snils');
+        if (snilsField) {
+            formData.set('snils', cleanSnils(snilsField.value));
+        }
+            const result = await response.json();
+
+            if (result.success) {
+                showNotification(
+                    currentEditId ? 'Запись успешно обновлена' : 'Запись успешно сохранена', 
+                    'success', 
+                    3000
+                );
+
+                // Очищаем кэш для текущего бюро
+                clientCache.clearBureauCache(currentBureau);
+                clientCache.delete(`record:${result.id}`);
+
+                // Обновляем данные в таблицах
+                updateRecordInAllTables(result.record);
+
+                // Обновляем счётчик записей
+                updateRecordsCount();
+
+                // Сбрасываем форму только после успешного сохранения
+                resetForm();
+
+                // Если это новая запись, обновляем список записей
+                if (!currentEditId) {
+                    loadBureauRecords();
+                }
+
+                // Если редактировали из профиля ОМО - возвращаемся туда
+                if (isEditingFromOmo) {
+                    goBackToOmoPage();
+                } else if (isEditingFromAllRecords) {
+                    goBackToAllRecordsPage();
+                }
+                
+                unsavedChangesExist = false;
+            }
+        } catch (error) {
+            console.error('Error saving record:', error);
+            showNotification(
+                error.message || 'Ошибка при сохранении записи', 
+                'error', 
+                5000
+            );
+        } finally {
+            hideLoading();
+        }
+    }
+
+    function updateRecordInAllTables(record) {
+        const tables = [
+            {tbody: document.querySelector('#recordsTable tbody'), isOmo: false},
+            {tbody: document.querySelector('#allRecordsTable tbody'), isOmo: false},
+            {tbody: document.querySelector('#omoRecordsTable tbody'), isOmo: true}
+        ];
+
+        tables.forEach(table => {
+            if (!table.tbody) return;
+
+            const rows = table.tbody.querySelectorAll('tr');
+            let recordFound = false;
+
+            for (const row of rows) {
+                const editBtn = row.querySelector('.edit-btn');
+                if (editBtn && editBtn.dataset.id === record.id.toString()) {
+                    const cells = row.querySelectorAll('td');
+
+                    if (table.isOmo) {
+                        // Для таблицы ОМО
+                        cells[0].textContent = record.bureau_number.startsWith("bureau_") ? 
+                            `Бюро №${record.bureau_number.split('_')[1]}` : 
+                            `ЭС №${record.bureau_number.split('_')[1]}`;
+                        cells[1].textContent = formatDate(record.mseDate || record.mse_date);
+                        cells[2].textContent = record.fullName || record.full_name || '';
+                        cells[3].textContent = formatDate(record.birthDate || record.birth_date);
+                        cells[4].textContent = record.snils || '';
+                    } else {
+                        // Для обычных таблиц
+                        cells[0].textContent = formatDate(record.mseDate || record.mse_date);
+                        cells[1].textContent = record.fullName || record.full_name || '';
+                        cells[2].textContent = formatDate(record.birthDate || record.birth_date);
+                        cells[3].textContent = record.snils || '';
+                    }
+                    recordFound = true;
+                    break;
+                }
+            }
+
+            // Если запись не найдена в таблице "Все записи" или ОМО, добавляем её
+            if (!recordFound && (table.tbody.id === 'allRecordsTable' || table.tbody.id === 'omoRecordsTable')) {
+                addRecordToTable(table.tbody, record, table.isOmo);
+            }
+        });
+    }
+
+    function addRecordToTable(tbody, record, isOmoTable = false) {
+        // Удаляем строку "Нет записей", если она есть
+        const noRecordsRow = tbody.querySelector('tr.no-records');
+        if (noRecordsRow && noRecordsRow.parentNode === tbody) {
+            tbody.removeChild(noRecordsRow);
+        }
+
+        const row = document.createElement('tr');
+        if (isOmoTable) {
+            const source = record.bureau_number.startsWith("bureau_") ? 
+                `Бюро №${record.bureau_number.split('_')[1]}` : 
+                `ЭС №${record.bureau_number.split('_')[1]}`;
+
+            row.innerHTML = `
+                <td>${source}</td>
+                <td>${formatDate(record.mseDate || record.mse_date)}</td>
+                <td>${record.fullName || record.full_name || ''}</td>
+                <td>${formatDate(record.birthDate || record.birth_date)}</td>
+                <td>${record.snils || ''}</td>
+                <td>
+                    <button class="edit-btn" data-id="${record.id}">Изменить</button>
+                    <button class="delete-btn" data-id="${record.id}">Удалить</button>
+                </td>
+            `;
+        } else {
+            row.innerHTML = `
+                <td>${formatDate(record.mseDate || record.mse_date)}</td>
+                <td>${record.fullName || record.full_name || ''}</td>
+                <td>${formatDate(record.birthDate || record.birth_date)}</td>
+                <td>${record.snils || ''}</td>
+                <td>
+                    <button class="edit-btn" data-id="${record.id}">Изменить</button>
+                    <button class="delete-btn" data-id="${record.id}">Удалить</button>
+                </td>
+            `;
+        }
+
+        // Добавляем обработчики событий
+        row.querySelector('.edit-btn').addEventListener('click', function() {
+            editRecord(this.dataset.id, isOmoTable);
+        });
+
+        row.querySelector('.delete-btn').addEventListener('click', function() {
+            deleteRecordConfirmation(this.dataset.id);
+        });
+
+        // Добавляем строку в начало таблицы
+        tbody.insertBefore(row, tbody.firstChild);
+    }
+
+    function resetForm() {
+        document.getElementById('mseForm').reset();
+        currentEditId = null;
+        document.getElementById('saveBtn').textContent = 'Сохранить';
+        document.getElementById('cancelEditBtn').style.display = 'none';
+        document.getElementById('clearFormBtn').style.display = 'block';
+        updateSpecialMarksCounter();
+
+        // Сбрасываем подсветку всех полей с учетом обязательных
+        resetFieldHighlighting();
+    }
+
+    // Функция сброса подсветки всех полей
+    function resetFieldHighlighting() {
+        const formControls = document.querySelectorAll('.form-control');
+        formControls.forEach(control => {
+            control.classList.remove('filled', 'empty');
+
+            // Для всех полей добавляем empty, если они пустые
+            if (!control.value || (control.type === 'checkbox' && !control.checked) || 
+                (control.tagName === 'SELECT' && control.value === '')) {
+                control.classList.add('empty');
+            }
+
+            // Обновляем подсветку в зависимости от текущего значения
+            updateFieldHighlight(control);
+        });
+
+        // Сбрасываем чекбоксы особых отметок
+        const checkboxes = document.querySelectorAll('.special-mark-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.classList.remove('filled', 'empty');
+            updateFieldHighlight(checkbox);
+        });
+    }
+    
+    function updateRecordsCount() {
+        fetch(`${API_BASE_URL}/records/${currentBureau}/count`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('recordsCount').textContent = data.count;
+            });
+    }
+
+    // Подтверждение удаления записи
+    function deleteRecordConfirmation(recordId) {
+        const confirmNotification = showNotification(
+            '<div style="margin-bottom: 15px; font-weight: bold;">Вы уверены, что хотите удалить эту запись?</div>' +
+            '<div class="notification-actions">' +
+            '<button class="btn btn-danger confirm-btn">Удалить</button>' +
+            '<button class="btn btn-secondary cancel-btn">Отменить</button>' +
+            '</div>', 
+            'warning', 
+            0
+        );
+
+        const confirmBtn = confirmNotification.querySelector('.confirm-btn');
+        confirmBtn.addEventListener('click', async function() {
+            closeNotification(confirmNotification);
+
+            try {
+                showLoading('Удаление записи...');
+
+                const response = await fetch(`${API_BASE_URL}/records/${currentBureau}/${recordId}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification('Запись успешно удалена', 'success', 3000);
+
+                    // Очищаем кэш
+                    clientCache.clearBureauCache(currentBureau);
+                    clientCache.delete(`record:${recordId}`);
+
+                    // Обновляем список записей
+                    if (isOmoMode) {
+                        loadOmoRecords();
+                    } else if (isEditingFromAllRecords) {
+                        loadAllRecords();
+                    } else {
+                        loadBureauRecords();
+                    }
+                } else {
+                    showNotification('Не удалось удалить запись', 'error', 3000);
+                }
+            } catch (error) {
+                console.error('Error deleting record:', error);
+                showNotification('Ошибка при удалении записи', 'error', 3000);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // Обработчик для кнопки "Отменить"
+        confirmNotification.querySelector('.cancel-btn').addEventListener('click', function() {
+            closeNotification(confirmNotification);
+        });
+    }
+
+    // Рендер пагинации для страницы "Все записи"
+    function renderPagination() {
+        pagination.innerHTML = '';
+
+        if (totalPages <= 1) return;
+
+        // Кнопка "Назад"
+        const prevBtn = document.createElement('button');
+        prevBtn.textContent = '←';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                saveState();
+                loadAllRecords();
+            }
+        });
+        pagination.appendChild(prevBtn);
+
+        // Номера страниц
+        const startPage = Math.max(1, currentPage - 2);
+        const endPage = Math.min(totalPages, currentPage + 2);
+
+        if (startPage > 1) {
+            const firstPageBtn = document.createElement('button');
+            firstPageBtn.textContent = '1';
+            firstPageBtn.addEventListener('click', () => {
+                currentPage = 1;
+                saveState();
+                loadAllRecords();
+            });
+            pagination.appendChild(firstPageBtn);
+
+            if (startPage > 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                pagination.appendChild(ellipsis);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.textContent = i;
+            if (i === currentPage) {
+                pageBtn.classList.add('active-page');
+            }
+            pageBtn.addEventListener('click', () => {
+                currentPage = i;
+                saveState();
+                loadAllRecords();
+            });
+            pagination.appendChild(pageBtn);
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                pagination.appendChild(ellipsis);
+            }
+
+            const lastPageBtn = document.createElement('button');
+            lastPageBtn.textContent = totalPages;
+            lastPageBtn.addEventListener('click', () => {
+                currentPage = totalPages;
+                saveState();
+                loadAllRecords();
+            });
+            pagination.appendChild(lastPageBtn);
+        }
+
+        // Кнопка "Вперед"
+        const nextBtn = document.createElement('button');
+        nextBtn.textContent = '→';
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                saveState();
+                loadAllRecords();
+            }
+        });
+        pagination.appendChild(nextBtn);
+    }
+
+    // Рендер пагинации для страницы ОМО
+    function renderOmoPagination() {
+        omoPagination.innerHTML = '';
+
+        if (omoTotalPages <= 1) return;
+
+        // Кнопка "Назад"
+        const prevBtn = document.createElement('button');
+        prevBtn.textContent = '←';
+        prevBtn.disabled = omoCurrentPage === 1;
+        prevBtn.addEventListener('click', () => {
+            if (omoCurrentPage > 1) {
+                omoCurrentPage--;
+                saveState();
+                loadOmoRecords();
+            }
+        });
+        omoPagination.appendChild(prevBtn);
+
+        // Номера страниц
+        const startPage = Math.max(1, omoCurrentPage - 2);
+        const endPage = Math.min(omoTotalPages, omoCurrentPage + 2);
+
+        if (startPage > 1) {
+            const firstPageBtn = document.createElement('button');
+            firstPageBtn.textContent = '1';
+            firstPageBtn.addEventListener('click', () => {
+                omoCurrentPage = 1;
+                saveState();
+                loadOmoRecords();
+            });
+            omoPagination.appendChild(firstPageBtn);
+
+            if (startPage > 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                omoPagination.appendChild(ellipsis);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.textContent = i;
+            if (i === omoCurrentPage) {
+                pageBtn.classList.add('active-page');
+            }
+            pageBtn.addEventListener('click', () => {
+                omoCurrentPage = i;
+                saveState();
+                loadOmoRecords();
+            });
+            omoPagination.appendChild(pageBtn);
+        }
+
+        if (endPage < omoTotalPages) {
+            if (endPage < omoTotalPages - 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                omoPagination.appendChild(ellipsis);
+            }
+
+            const lastPageBtn = document.createElement('button');
+            lastPageBtn.textContent = omoTotalPages;
+            lastPageBtn.addEventListener('click', () => {
+                omoCurrentPage = omoTotalPages;
+                saveState();
+                loadOmoRecords();
+            });
+            omoPagination.appendChild(lastPageBtn);
+        }
+
+        // Кнопка "Вперед"
+        const nextBtn = document.createElement('button');
+        nextBtn.textContent = '→';
+        nextBtn.disabled = omoCurrentPage === omoTotalPages;
+        nextBtn.addEventListener('click', () => {
+            if (omoCurrentPage < omoTotalPages) {
+                omoCurrentPage++;
+                saveState();
+                loadOmoRecords();
+            }
+        });
+        omoPagination.appendChild(nextBtn);
+    }
+
+    // Экспорт данных в Excel
+    async function exportData(format) {
+        try {
+            showLoading('Подготовка данных для экспорта...');
+
+            const selectedBureau = omoSelector.value || 'all';
+            const searchQuery = omoSearchQuery || '';
+
+            const url = `${API_BASE_URL}/export/${selectedBureau}` + 
+                (searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : '');
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const blob = await response.blob();
+            const urlObject = window.URL.createObjectURL(blob);
+
+            const currentDate = new Date().toISOString().split('T')[0].replace(/-/g, '');
+            let fileName = `mse_export_${currentDate}.xlsx`;
+
+            if (selectedBureau === 'all') {
+                fileName = `mse_all_records_${currentDate}.xlsx`;
+            } else if (selectedBureau.startsWith('bureau_')) {
+                const bureauNum = selectedBureau.split('_')[1];
+                fileName = `mse_bureau_${bureauNum}_records_${currentDate}.xlsx`;
+            } else if (selectedBureau.startsWith('expert_')) {
+                const expertNum = selectedBureau.split('_')[1];
+                fileName = `mse_expert_${expertNum}_records_${currentDate}.xlsx`;
+            }
+
+            const a = document.createElement('a');
+            a.href = urlObject;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(urlObject);
+
+            showNotification('Файл Excel успешно сформирован', 'success', 3000);
+        } catch (error) {
+            console.error('Error exporting data:', error);
+            showNotification('Ошибка при экспорте данных', 'error', 3000);
+        } finally {
+            hideLoading();
+        }
+    }
+
+    // Инициализация приложения
+    window.addEventListener('scroll', function() {
+        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+        if (window.pageYOffset > 300) {
+            scrollToTopBtn.style.display = 'block';
+        } else {
+            scrollToTopBtn.style.display = 'none';
+        }
+    });
+
+    document.getElementById('scrollToTopBtn').addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        createBureauCards();
+        restoreState();
+        setupSpecialMarksValidation();
+        setupFullNameInput();
+        initForm();
+
+        // Обработчики событий
+        submitPassword.addEventListener('click', checkPassword);
+        closeModalBtn.addEventListener('click', closePasswordModal);
+        passwordModal.addEventListener('click', function(e) {
+            if (e.target === passwordModal) {
+                closePasswordModal();
+            }
+        });
+        backBtn.addEventListener('click', goBackToMainPage);
+        backToFormBtn.addEventListener('click', goBackToFormPage);
+        backFromOmoBtn.addEventListener('click', goBackToMainPage);
+        backToOmoBtn.addEventListener('click', goBackToOmoPage);
+        passwordInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') checkPassword();
+        });
+
+        viewAllBtn.addEventListener('click', showAllRecords);
+        omoSelector.addEventListener('change', loadOmoRecords);
+    });
+</script>
+</body>
+</html>
